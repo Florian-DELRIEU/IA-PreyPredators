@@ -16,7 +16,8 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
 # Blobs
-B = blob(400,300,False)
+Preys = [blob(None,None,False) for _ in range (10)]
+Predators = [blob(None,None,True) for _ in range (2)]
 
 # Boucle principale
 running = True
@@ -26,8 +27,10 @@ while running:
             running = False
         # Dessiner la fenêtre
     window.fill(WHITE)
-    B.draw(window)
-    B.move()
+    # move all blobs
+    for blob in Preys + Predators:
+        blob.draw(window)
+        blob.move()
     pygame.display.update()
 
 # Quitter Pygame

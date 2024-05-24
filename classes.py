@@ -16,6 +16,7 @@ class blob:
         self.speed = 1 * 60/FPS # Pour rester constant selon les FPS
         self.direction = random.randint(0,360)
         self.iteration = 0
+        self.rays = []
 
     def draw(self, window):
         pygame.draw.circle(window, self.color, (self.x, self.y), self.size)
@@ -43,8 +44,52 @@ class blob:
             end_y = self.y + ray_length * math.sin(angle)
             pygame.draw.line(window, BLACK, (self.x, self.y), (end_x, end_y),width=1)
 
+    def detect(self, preys, detect_range=100, num_rays=8):
+        closest_prey = None
+        min_distance = detect_range
+        angle_step = 360 / num_rays
+        self.rays = []  # Reset rays
+
+        for i in range(num_rays):
+            angle = math.radians(i * angle_step)
+            end_x = self.x + detect_range * math.cos(angle)
+            end_y = self.y + detect_range * math.sin(angle)
+            self.rays.append((end_x, end_y))
+
+        for prey in preys: # for each prey
+            for end_x, end_y in self.rays: # for each rays
+                if self.line_intersects_circle(self.x, self.y, end_x, end_y, prey.x, prey.y, prey.size):
+                    distance = math.hypot(prey.x - self.x, prey.y - self.y)
+                    if distance < min_distance:
+                        min_distance = distance
+                        closest_prey = prey
+
+        return closest_prey
+
     def keep_in_screen(self):
         # todo fix this
         # Assurer que les blobs restent dans la fenêtre
         self.x = max(0, min(self.x, width - self.size))
         self.y = max(0, min(self.y, height() - self.size))
+
+    def line_intersects_circle(self, x1, y1, x2, y2, cx, cy, prey_radius):
+        """
+        Check if the line segment (x1, y1) to (x2, y2) intersects with the circle centered at (cx, cy) with radius
+         - A: Centre du predateur
+         - B: Extremité du rayon
+         - C: Centre de la proie
+         - H: Point sur le rayon le plus proche de C (entre A et B)
+        """
+        ac = [cx - x1, cy - y1] # Vecteur (predateur-Proie)
+        ab = [x2 - x1, y2 - y1] # Vecteur (Rayon)
+        norm_ab = ab[0] ** 2 + ab[1] ** 2
+        scal_acab = ac[0] * ab[0] + ac[1] * ab[1]
+        t = scal_acab / norm_ab
+
+        if t < 0:   t = 0
+        elif t > 1: t = 1
+
+        ah = [ab[0] * t + x1, ab[1] * t + y1]
+        HC = math.hypot(ah[0] - cx, ah[1] - cy)
+
+        return HC <= prey_radius

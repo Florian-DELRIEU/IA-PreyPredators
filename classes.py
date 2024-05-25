@@ -25,6 +25,7 @@ class blob:
         pygame.draw.circle(window, self.color, (self.x, self.y), self.size)
         if self.is_predator: self.draw_rays(window)
 
+
     def move(self,method = "random"):
         if not self.is_predator:    method = "random"
         if self.is_predator:        method = "predator"
@@ -68,10 +69,10 @@ class blob:
         return closest_prey
 
     def keep_in_screen(self):
-        # todo fix this
-        # Assurer que les blobs restent dans la fenêtre
-        self.x = max(0, min(self.x, width - self.size))
-        self.y = max(0, min(self.y, height() - self.size))
+        """ Assure que les blobs restent dans les limites de l'écran """
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        self.x = max(self.size, min(self.x, screen_width - self.size))
+        self.y = max(self.size, min(self.y, screen_height - self.size))
 
     def line_intersects_circle(self, x1, y1, x2, y2, cx, cy, prey_radius):
         """

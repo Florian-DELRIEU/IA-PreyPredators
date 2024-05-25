@@ -5,7 +5,7 @@ from classes import blob
 
 # Blobs
 Preys = [blob(None,None,False) for _ in range (15)]
-Predators = [blob(None,None,True) for _ in range (5)]
+Predators = [blob(None,None,True) for _ in range (2)]
 
 # Boucle principale
 running = True
@@ -23,11 +23,11 @@ while running:
         blob.move()
     for blob in Predators:
         blob.target = None
-        blob.draw(window)
         blob.target = blob.detect(Preys)
         blob.move()
-    if blob.target is not None: blob.color = BLACK
-    if blob.target is None:     blob.color = RED
+        blob.draw(window)
+        if blob.target is not None: blob.color = BLACK
+        if blob.target is None:     blob.color = RED
     pygame.display.update()
 
 # Quitter Pygame

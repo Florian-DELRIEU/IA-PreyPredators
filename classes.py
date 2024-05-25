@@ -13,10 +13,13 @@ class blob:
         self.is_predator = is_predator
         self.size = 10
         self.color = RED if is_predator else GREEN
-        self.speed = 1 * 60/FPS # Pour rester constant selon les FPS
+        self.speed = 2 * 60/FPS # Pour rester constant selon les FPS
         self.direction = random.randint(0,360)
         self.iteration = 0
         self.rays = []
+        self.detect_range = 100
+        self.num_rays = 8
+        self.target = None
 
     def draw(self, window):
         pygame.draw.circle(window, self.color, (self.x, self.y), self.size)
@@ -36,26 +39,25 @@ class blob:
         if method == "predator":
             pass
 
-    def draw_rays(self, window, ray_length=100, num_rays=8):
-        angle_step = 360 / num_rays
-        for i in range(num_rays):
+    def draw_rays(self, window):
+        ray_length = self.detect_range
+        angle_step = 360 / self.num_rays
+        for i in range(self.num_rays):
             angle = math.radians(i * angle_step)
             end_x = self.x + ray_length * math.cos(angle)
             end_y = self.y + ray_length * math.sin(angle)
             pygame.draw.line(window, BLACK, (self.x, self.y), (end_x, end_y),width=1)
 
-    def detect(self, preys, detect_range=100, num_rays=8):
+    def detect(self, preys):
         closest_prey = None
-        min_distance = detect_range
-        angle_step = 360 / num_rays
+        min_distance = self.detect_range
+        angle_step = 360 / self.num_rays
         self.rays = []  # Reset rays
-
-        for i in range(num_rays):
+        for i in range(self.num_rays):
             angle = math.radians(i * angle_step)
-            end_x = self.x + detect_range * math.cos(angle)
-            end_y = self.y + detect_range * math.sin(angle)
+            end_x = self.x + self.detect_range * math.cos(angle)
+            end_y = self.y + self.detect_range * math.sin(angle)
             self.rays.append((end_x, end_y))
-
         for prey in preys: # for each prey
             for end_x, end_y in self.rays: # for each rays
                 if self.line_intersects_circle(self.x, self.y, end_x, end_y, prey.x, prey.y, prey.size):
@@ -63,7 +65,6 @@ class blob:
                     if distance < min_distance:
                         min_distance = distance
                         closest_prey = prey
-
         return closest_prey
 
     def keep_in_screen(self):

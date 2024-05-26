@@ -24,7 +24,7 @@ class blob:
         self.rays_angles = []
         self.detect_range = 100
         self.target = None
-        self.energy = 10
+        self.energy = 100
         if self.is_predator : Predators.append(self)
         if not self.is_predator : Preys.append(self)
 
@@ -60,7 +60,7 @@ class blob:
             method = "predator"
         self.iteration += 1
         #self.keep_in_screen()
-        loop_iteration = random.randint(50,60)
+        loop_iteration = random.randint(0,10)
         if method == "random":
             self.x += self.speed * np.cos(self.direction)
             self.y += self.speed * np.sin(self.direction)
@@ -71,13 +71,26 @@ class blob:
             self.iteration = 0
             self.x += self.speed * np.cos(self.direction)
             self.y += self.speed * np.sin(self.direction)
+        if self.is_predator : self.gain_energy(-0.1)
+        if not self.is_predator : self.gain_energy(1)
 
     def gain_energy(self,ammont):
         self.energy += ammont
+        if self.energy <= 0: self.die()
+        if self.energy >= 1000: self.split()
+
 
     def die(self):
-        if self.is_predator: Predators.__delitem__(Predators.index(self))
-        if not self.is_predator: Preys.__delitem__(Preys.index(self))
+        if self in Predators    : Predators.__delitem__(Predators.index(self))
+        if self in Preys        : Preys.__delitem__(Preys.index(self))
+
+    def split(self):
+        blob(self.x,self.y,None,self.is_predator)
+        self.energy -= 500
+
+    def bite(self,target):
+        target.energy -= 10000
+        self.energy += 500
 
     def create_rays(self):
         """
@@ -120,8 +133,7 @@ class blob:
                         self.direction = self.rays_angles[i]
                     # Verifié si contact avec la proie
                     if distance <= self.size:
-                        prey.color = GREY
-                        prey.gain_energy(-10000)
+                        self.bite(prey)
         self.target = closest_prey
         # Changement de couleur si proie detecté
         if self.target is None: self.color = RED

@@ -4,8 +4,8 @@ from pygame_init import window,WHITE,FPS,BLACK,RED
 from classes import blob,Preys,Predators
 
 # Blobs
-for _ in range (15): blob(None,None,None,False)
-for _ in range (5): blob(None,None,None,True)
+for _ in range (1): blob(None,None,None,False)
+for _ in range (0): blob(None,None,None,True)
 
 # Boucle principale
 running = True

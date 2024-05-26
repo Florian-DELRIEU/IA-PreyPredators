@@ -10,7 +10,7 @@ class blob:
         else:           self.x = x
         if y is None:   self.y = random.randint(0,height)
         else:           self.y = y
-        if direction is None:   self.direction = random.randint(0,360)
+        if direction is None:   self.direction = np.radians(random.randint(0,360))
         else:           self.direction = direction
         self.is_predator = is_predator
         self.size = 10
@@ -18,9 +18,9 @@ class blob:
         self.speed = 2 * 60/FPS # Pour rester constant selon les FPS
         self.iteration = 0
         self.rays = []
+        self.rays_angles = []
         self.detect_range = 100
         self.target = None
-        self.create_rays()
 
     def draw(self, window):
         """
@@ -56,19 +56,20 @@ class blob:
             self.x += self.speed * np.cos(self.direction)
             self.y += self.speed * np.sin(self.direction)
             if self.iteration == 100:
-                self.direction = random.randint(0,360)
+                self.direction = np.radians(random.randint(0,360))
                 self.iteration -= 100
         if method == "predator":
-            pass
+            self.create_rays()
 
     def create_rays(self):
         """
         Définie, sans les tracer, les rayons de détections des blobs et stock les extrémités dans :self.rays:
         :return:
         """
-        rays_angles = self.direction + np.array([0,45,90,180,270,315])
-        for i in range(len(rays_angles)):
-            current_angle = np.radians(rays_angles[i])
+        self.rays = []
+        self.rays_angles = self.direction + np.array([0, 45, 90, 180, 270, 315])
+        for i in range(len(self.rays_angles)):
+            current_angle = np.radians(self.rays_angles[i])
             end_x = self.x + self.detect_range * math.cos(current_angle)
             end_y = self.y + self.detect_range * math.sin(current_angle)
             self.rays.append((end_x, end_y))
@@ -85,13 +86,15 @@ class blob:
         min_distance = self.detect_range
         # Boucle de détection
         for prey in preys:
-            for end_x, end_y in self.rays:
+            for i in range(len(self.rays)):
+                end_x,end_y = self.rays[i]
                 if self.line_intersects_circle(self.x, self.y, end_x, end_y, prey.x, prey.y, prey.size):
                     distance = math.hypot(prey.x - self.x, prey.y - self.y)
                     # Vérifie si la proie en cours est plus proche qu'une autre
                     if distance < min_distance:
                         min_distance = distance
                         closest_prey = prey
+                        self.direction = self.rays_angles[i]
         return closest_prey
 
     def keep_in_screen(self):

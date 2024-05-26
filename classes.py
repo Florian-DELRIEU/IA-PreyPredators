@@ -2,7 +2,7 @@ import pygame
 import random
 import math
 import numpy as np
-from pygame_init import width,height,RED,GREEN,FPS,window,BLACK
+from pygame_init import width,height,RED,GREEN,FPS,window,BLACK,GREY
 
 class blob:
     def __init__(self,x=None,y=None,direction=None,is_predator=False):
@@ -38,7 +38,7 @@ class blob:
         :return:
         """
         for end_x,end_y in self.rays:
-            pygame.draw.line(window, BLACK, (self.x, self.y), (end_x, end_y),width=1)
+            pygame.draw.line(window, GREY, (self.x, self.y), (end_x, end_y),width=1)
 
     def move(self,method = "random"):
         """
@@ -62,8 +62,8 @@ class blob:
                 self.iteration -= 50
         if method == "predator":
             self.iteration = 0
-            self.x += self.speed * np.cos(np.radians(self.direction))
-            self.y += self.speed * np.sin(np.radians(self.direction))
+            self.x += self.speed * np.cos(self.direction)
+            self.y += self.speed * np.sin(self.direction)
 
     def create_rays(self):
         """
@@ -71,9 +71,11 @@ class blob:
         :return:
         """
         self.rays = []
-        self.rays_angles = self.direction + np.array([0,10 ,30, 330, 350])
+        self.rays_angles = self.direction + np.radians(np.array(
+            [0,180] + [10,30,45,90,135] + [350,330,315,270,225]
+        ))
         for i in range(len(self.rays_angles)):
-            current_angle = np.radians(self.rays_angles[i])
+            current_angle = self.rays_angles[i]
             end_x = self.x + self.detect_range * math.cos(current_angle)
             end_y = self.y + self.detect_range * math.sin(current_angle)
             self.rays.append((end_x, end_y))

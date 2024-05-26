@@ -4,7 +4,7 @@ import pygame
 pygame.init()
 
 # Configuration de la fenêtre
-width, height = 800*1, 600*1
+width, height = 1000*1, 1000*1
 window = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Simulation Proie-Prédateur")
 

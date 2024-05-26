@@ -11,7 +11,7 @@ class blob:
         if y is None:   self.y = random.randint(0,height)
         else:           self.y = y
         if direction is None:   self.direction = np.radians(random.randint(0,360))
-        else:           self.direction = direction
+        else:           self.direction = np.radians(direction)
         self.is_predator = is_predator
         self.size = 10
         self.color = RED if is_predator else GREEN
@@ -48,18 +48,22 @@ class blob:
                 - "predator": ---pas encore implémenté---
         :return:
         """
-        if not self.is_predator:    method = "random"
-        if self.is_predator:        method = "predator"
+        if not self.is_predator or self.target is None:
+            method = "random"
+        elif self.is_predator:
+            method = "predator"
         self.iteration += 1
         #self.keep_in_screen()
         if method == "random":
             self.x += self.speed * np.cos(self.direction)
             self.y += self.speed * np.sin(self.direction)
-            if self.iteration == 100:
+            if self.iteration >= 50:
                 self.direction = np.radians(random.randint(0,360))
-                self.iteration -= 100
+                self.iteration -= 50
         if method == "predator":
-            self.create_rays()
+            self.iteration = 0
+            self.x += self.speed * np.cos(np.radians(self.direction))
+            self.y += self.speed * np.sin(np.radians(self.direction))
 
     def create_rays(self):
         """
@@ -67,7 +71,7 @@ class blob:
         :return:
         """
         self.rays = []
-        self.rays_angles = self.direction + np.array([0, 45, 90, 180, 270, 315])
+        self.rays_angles = self.direction + np.array([0,10 ,30, 330, 350])
         for i in range(len(self.rays_angles)):
             current_angle = np.radians(self.rays_angles[i])
             end_x = self.x + self.detect_range * math.cos(current_angle)
@@ -82,6 +86,7 @@ class blob:
         :return: Proie la plus proche
         """
         # Initialisation
+        self.create_rays()
         closest_prey = None
         min_distance = self.detect_range
         # Boucle de détection

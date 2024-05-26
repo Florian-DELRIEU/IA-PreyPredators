@@ -5,7 +5,7 @@ from classes import blob
 
 # Blobs
 Preys =     [blob(None,None,None,False) for _ in range (15)]
-Predators = [blob(None,None,None,True) for _ in range (1)]
+Predators = [blob(None,None,270,True) for _ in range (1)]
 
 # Boucle principale
 running = True

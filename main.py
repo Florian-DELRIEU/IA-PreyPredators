@@ -19,15 +19,15 @@ while running:
     # move all blobs
     time.sleep(1/FPS)
     for blob in Preys:
-        blob.draw(window)
         blob.move()
+        blob.draw(window)
+        blob.gain_energy(0)
+        if blob.energy <= 0: Preys.__delitem__(Preys.index(blob))
     for blob in Predators:
-        blob.target = None
-        blob.target = blob.detect(Preys)
+        blob.detect(Preys)
         blob.move()
         blob.draw(window)
-        if blob.target is not None: blob.color = BLACK
-        if blob.target is None:     blob.color = RED
+        if blob.energy <= 0: Predators.__delitem__(Predators.index(blob))
     pygame.display.update()
 
 # Quitter Pygame

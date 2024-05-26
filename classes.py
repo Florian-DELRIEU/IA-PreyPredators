@@ -21,6 +21,7 @@ class blob:
         self.rays_angles = []
         self.detect_range = 100
         self.target = None
+        self.energy = 10
 
     def draw(self, window):
         """
@@ -54,16 +55,20 @@ class blob:
             method = "predator"
         self.iteration += 1
         #self.keep_in_screen()
+        loop_iteration = random.randint(50,60)
         if method == "random":
             self.x += self.speed * np.cos(self.direction)
             self.y += self.speed * np.sin(self.direction)
-            if self.iteration >= 50:
+            if self.iteration >= loop_iteration:
                 self.direction = np.radians(random.randint(0,360))
-                self.iteration -= 50
+                self.iteration -= loop_iteration
         if method == "predator":
             self.iteration = 0
             self.x += self.speed * np.cos(self.direction)
             self.y += self.speed * np.sin(self.direction)
+
+    def gain_energy(self,ammont):
+        self.energy += ammont
 
     def create_rays(self):
         """
@@ -72,7 +77,7 @@ class blob:
         """
         self.rays = []
         self.rays_angles = self.direction + np.radians(np.array(
-            [0,180] + [10,30,45,90,135] + [350,330,315,270,225]
+            [0] + [10,30,45,90,135] + [-10,-30,-45,-90,-135]
         ))
         for i in range(len(self.rays_angles)):
             current_angle = self.rays_angles[i]
@@ -89,12 +94,14 @@ class blob:
         """
         # Initialisation
         self.create_rays()
+        self.target = None
         closest_prey = None
         min_distance = self.detect_range
         # Boucle de détection
         for prey in preys:
             for i in range(len(self.rays)):
                 end_x,end_y = self.rays[i]
+                # Vérifie si une proie est détectée
                 if self.line_intersects_circle(self.x, self.y, end_x, end_y, prey.x, prey.y, prey.size):
                     distance = math.hypot(prey.x - self.x, prey.y - self.y)
                     # Vérifie si la proie en cours est plus proche qu'une autre
@@ -102,7 +109,14 @@ class blob:
                         min_distance = distance
                         closest_prey = prey
                         self.direction = self.rays_angles[i]
-        return closest_prey
+                    # Verifié si contact avec la proie
+                    if distance <= self.size:
+                        prey.color = GREY
+                        prey.gain_energy(-10000)
+        self.target = closest_prey
+        # Changement de couleur si proie detecté
+        if self.target is None: self.color = RED
+        else:                   self.color = BLACK
 
     def keep_in_screen(self):
         """

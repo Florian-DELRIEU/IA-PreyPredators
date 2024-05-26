@@ -5,21 +5,22 @@ import numpy as np
 from pygame_init import width,height,RED,GREEN,FPS,window,BLACK
 
 class blob:
-    def __init__(self,x=None,y=None,is_predator=False):
+    def __init__(self,x=None,y=None,direction=None,is_predator=False):
         if x is None:   self.x = random.randint(0,width)
         else:           self.x = x
         if y is None:   self.y = random.randint(0,height)
         else:           self.y = y
+        if direction is None:   self.direction = random.randint(0,360)
+        else:           self.direction = direction
         self.is_predator = is_predator
         self.size = 10
         self.color = RED if is_predator else GREEN
         self.speed = 2 * 60/FPS # Pour rester constant selon les FPS
-        self.direction = random.randint(0,360)
         self.iteration = 0
         self.rays = []
         self.detect_range = 100
-        self.num_rays = 8
         self.target = None
+        self.create_rays()
 
     def draw(self, window):
         pygame.draw.circle(window, self.color, (self.x, self.y), self.size)
@@ -40,25 +41,21 @@ class blob:
         if method == "predator":
             pass
 
+    def create_rays(self):
+        rays_angles = self.direction + np.array([0,45,90,180,270,315])
+        for i in range(len(rays_angles)):
+            current_angle = np.radians(rays_angles[i])
+            end_x = self.x + self.detect_range * math.cos(current_angle)
+            end_y = self.y + self.detect_range * math.sin(current_angle)
+            self.rays.append((end_x, end_y))
+
     def draw_rays(self, window):
-        ray_length = self.detect_range
-        angle_step = 360 / self.num_rays
-        for i in range(self.num_rays):
-            angle = math.radians(i * angle_step)
-            end_x = self.x + ray_length * math.cos(angle)
-            end_y = self.y + ray_length * math.sin(angle)
+        for end_x,end_y in self.rays:
             pygame.draw.line(window, BLACK, (self.x, self.y), (end_x, end_y),width=1)
 
     def detect(self, preys):
         closest_prey = None
         min_distance = self.detect_range
-        angle_step = 360 / self.num_rays
-        self.rays = []  # Reset rays
-        for i in range(self.num_rays):
-            angle = math.radians(i * angle_step)
-            end_x = self.x + self.detect_range * math.cos(angle)
-            end_y = self.y + self.detect_range * math.sin(angle)
-            self.rays.append((end_x, end_y))
         for prey in preys: # for each prey
             for end_x, end_y in self.rays: # for each rays
                 if self.line_intersects_circle(self.x, self.y, end_x, end_y, prey.x, prey.y, prey.size):

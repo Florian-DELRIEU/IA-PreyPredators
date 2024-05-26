@@ -23,11 +23,31 @@ class blob:
         self.create_rays()
 
     def draw(self, window):
+        """
+        Dessine les blobs et leurs attribut en fonctions de son type
+        :param window: Fenêtre dans laquelle le blob sera déssiné
+        """
         pygame.draw.circle(window, self.color, (self.x, self.y), self.size)
         if self.is_predator: self.draw_rays(window)
 
+    def draw_rays(self, window):
+        """
+        Dessine les rayons des blobs. Cette fonction est dissocié de la fonction :draw: pour pouvoir choisir de
+        dessiner les rayons ou pas
+        :param window:
+        :return:
+        """
+        for end_x,end_y in self.rays:
+            pygame.draw.line(window, BLACK, (self.x, self.y), (end_x, end_y),width=1)
 
     def move(self,method = "random"):
+        """
+        Execute une itération de mouvement pour le blob.
+        :param method: Méthode de déplacement
+                - "random": Marche aléatoire (actuellement pour les proies)
+                - "predator": ---pas encore implémenté---
+        :return:
+        """
         if not self.is_predator:    method = "random"
         if self.is_predator:        method = "predator"
         self.iteration += 1
@@ -42,6 +62,10 @@ class blob:
             pass
 
     def create_rays(self):
+        """
+        Définie, sans les tracer, les rayons de détections des blobs et stock les extrémités dans :self.rays:
+        :return:
+        """
         rays_angles = self.direction + np.array([0,45,90,180,270,315])
         for i in range(len(rays_angles)):
             current_angle = np.radians(rays_angles[i])
@@ -49,35 +73,45 @@ class blob:
             end_y = self.y + self.detect_range * math.sin(current_angle)
             self.rays.append((end_x, end_y))
 
-    def draw_rays(self, window):
-        for end_x,end_y in self.rays:
-            pygame.draw.line(window, BLACK, (self.x, self.y), (end_x, end_y),width=1)
-
     def detect(self, preys):
+        """
+        Vérifie si l'un des rayons détécte une proies. Si plusieurs proies sont détectés alors la prlus proche est
+        sauvegardé
+        :param preys: Listes des proies pouvant être détecté
+        :return: Proie la plus proche
+        """
+        # Initialisation
         closest_prey = None
         min_distance = self.detect_range
-        for prey in preys: # for each prey
-            for end_x, end_y in self.rays: # for each rays
+        # Boucle de détection
+        for prey in preys:
+            for end_x, end_y in self.rays:
                 if self.line_intersects_circle(self.x, self.y, end_x, end_y, prey.x, prey.y, prey.size):
                     distance = math.hypot(prey.x - self.x, prey.y - self.y)
+                    # Vérifie si la proie en cours est plus proche qu'une autre
                     if distance < min_distance:
                         min_distance = distance
                         closest_prey = prey
         return closest_prey
 
     def keep_in_screen(self):
-        """ Assure que les blobs restent dans les limites de l'écran """
+        """
+        Assure que les blobs restent dans les limites de l'écran
+        TODO Fix it
+        """
         screen_width, screen_height = pygame.display.get_surface().get_size()
         self.x = max(self.size, min(self.x, screen_width - self.size))
         self.y = max(self.size, min(self.y, screen_height - self.size))
 
     def line_intersects_circle(self, x1, y1, x2, y2, cx, cy, prey_radius):
         """
-        Check if the line segment (x1, y1) to (x2, y2) intersects with the circle centered at (cx, cy) with radius
+        Vérifie si le segement (x1, y1) to (x2, y2) intersecte le cercle de centre (cx, cy) avec son rayon.
          - A: Centre du predateur
          - B: Extremité du rayon
          - C: Centre de la proie
-         - H: Point sur le rayon le plus proche de C (entre A et B)
+         - H: Point sur le rayon le plus proche de C (toujours entre A et B)
+
+         :return: True si il y a intersection sinon False
         """
         ac = [cx - x1, cy - y1] # Vecteur (predateur-Proie)
         ab = [x2 - x1, y2 - y1] # Vecteur (Rayon)

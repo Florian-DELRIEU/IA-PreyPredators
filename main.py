@@ -1,11 +1,11 @@
 import pygame
 import time
 from pygame_init import window,WHITE,FPS,BLACK,RED
-from classes import blob
+from classes import blob,Preys,Predators
 
 # Blobs
-Preys =     [blob(None,None,None,False) for _ in range (15)]
-Predators = [blob(None,None,None,True) for _ in range (5)]
+for _ in range (15): blob(None,None,None,False)
+for _ in range (5): blob(None,None,None,True)
 
 # Boucle principale
 running = True
@@ -18,16 +18,11 @@ while running:
 
     # move all blobs
     time.sleep(1/FPS)
-    for blob in Preys:
+    for blob in Predators + Preys:
+        if blob in Predators : blob.detect(Preys)
         blob.move()
         blob.draw(window)
-        blob.gain_energy(0)
-        if blob.energy <= 0: Preys.__delitem__(Preys.index(blob))
-    for blob in Predators:
-        blob.detect(Preys)
-        blob.move()
-        blob.draw(window)
-        if blob.energy <= 0: Predators.__delitem__(Predators.index(blob))
+        if blob.energy <= 0: blob.die()
     pygame.display.update()
 
 # Quitter Pygame

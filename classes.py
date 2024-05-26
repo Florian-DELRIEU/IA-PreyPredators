@@ -4,6 +4,9 @@ import math
 import numpy as np
 from pygame_init import width,height,RED,GREEN,FPS,window,BLACK,GREY
 
+Preys = []
+Predators = []
+
 class blob:
     def __init__(self,x=None,y=None,direction=None,is_predator=False):
         if x is None:   self.x = random.randint(0,width)
@@ -22,6 +25,8 @@ class blob:
         self.detect_range = 100
         self.target = None
         self.energy = 10
+        if self.is_predator : Predators.append(self)
+        if not self.is_predator : Preys.append(self)
 
     def draw(self, window):
         """
@@ -69,6 +74,10 @@ class blob:
 
     def gain_energy(self,ammont):
         self.energy += ammont
+
+    def die(self):
+        if self.is_predator: Predators.__delitem__(Predators.index(self))
+        if not self.is_predator: Preys.__delitem__(Preys.index(self))
 
     def create_rays(self):
         """

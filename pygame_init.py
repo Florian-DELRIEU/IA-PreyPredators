@@ -2,6 +2,8 @@ import pygame
 
 # Initialisation de Pygame
 pygame.init()
+pygame.font.init()
+font = pygame.font.SysFont("Arial",24)
 
 # Configuration de la fenêtre
 width, height = 1000*1, 1000*1

@@ -2,7 +2,7 @@ import pygame
 import random
 import math
 import numpy as np
-from pygame_init import width,height,RED,GREEN,FPS,window,BLACK,GREY
+from pygame_init import *
 
 Preys = []
 Predators = []

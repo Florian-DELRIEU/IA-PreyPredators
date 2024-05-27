@@ -18,7 +18,7 @@ class blob:
         self.is_predator = is_predator
         self.size = 10
         self.color = RED if is_predator else GREEN
-        self.speed = 2 * 60/FPS # Pour rester constant selon les FPS
+        self.speed = 1 * 60/FPS # Pour rester constant selon les FPS
         self.iteration = 0
         self.rays = []
         self.rays_angles = []
@@ -34,7 +34,7 @@ class blob:
         :param window: Fenêtre dans laquelle le blob sera déssiné
         """
         pygame.draw.circle(window, self.color, (self.x, self.y), self.size)
-        if self.is_predator: self.draw_rays(window)
+        #if self.is_predator: self.draw_rays(window)
 
     def draw_rays(self, window):
         """
@@ -60,7 +60,7 @@ class blob:
             method = "predator"
         self.iteration += 1
         #self.keep_in_screen()
-        loop_iteration = random.randint(0,10)
+        loop_iteration = random.randint(50,100)
         if method == "random":
             self.x += self.speed * np.cos(self.direction)
             self.y += self.speed * np.sin(self.direction)

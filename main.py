@@ -5,7 +5,7 @@ from pygame_init import *
 from classes import blob,Preys,Predators
 
 # Blobs
-for _ in range (5): blob(None,None,None,False)
+for _ in range (15): blob(None,None,None,False)
 for _ in range (1): blob(None,None,None,True)
 
 selected_blob = None

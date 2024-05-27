@@ -24,9 +24,10 @@ class blob:
         self.rays_angles = []
         self.detect_range = 100
         self.target = None
-        self.energy = 100
+        self.energy = 50 if self.is_predator else 10
         if self.is_predator : Predators.append(self)
         if not self.is_predator : Preys.append(self)
+        self.split_cost = 100
 
     def draw(self, window):
         """
@@ -71,26 +72,28 @@ class blob:
             self.iteration = 0
             self.x += self.speed * np.cos(self.direction)
             self.y += self.speed * np.sin(self.direction)
-        if self.is_predator : self.gain_energy(-0.1)
-        if not self.is_predator : self.gain_energy(1)
+        if self.is_predator : self.gain_energy(-0.05)
+        if not self.is_predator : self.gain_energy(0.1)
 
     def gain_energy(self,ammont):
         self.energy += ammont
         if self.energy <= 0: self.die()
-        if self.energy >= 1000: self.split()
+        if self.energy >= 1.5*self.split_cost: self.split()
 
 
     def die(self):
+        self.energy=0
         if self in Predators    : Predators.__delitem__(Predators.index(self))
         if self in Preys        : Preys.__delitem__(Preys.index(self))
 
     def split(self):
         blob(self.x,self.y,None,self.is_predator)
-        self.energy -= 500
+        self.energy -= self.split_cost
 
     def bite(self,target):
-        target.energy -= 10000
-        self.energy += 500
+        target.die()
+        self.energy += 100
+        self.target = None
 
     def create_rays(self):
         """
@@ -134,6 +137,7 @@ class blob:
                     # Verifié si contact avec la proie
                     if distance <= self.size:
                         self.bite(prey)
+                        break
         self.target = closest_prey
         # Changement de couleur si proie detecté
         if self.target is None: self.color = RED

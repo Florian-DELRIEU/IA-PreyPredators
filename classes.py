@@ -8,7 +8,7 @@ Preys = []
 Predators = []
 
 class blob:
-    def __init__(self,x=None,y=None,direction=None,is_predator=False):
+    def __init__(self,x=None,y=None,direction=None,is_predator=False,speed=1,detect_range=100,color=RED):
         if x is None:   self.x = random.randint(0,width)
         else:           self.x = x
         if y is None:   self.y = random.randint(0,height)
@@ -17,12 +17,12 @@ class blob:
         else:           self.direction = np.radians(direction)
         self.is_predator = is_predator
         self.size = 10
-        self.color = RED if is_predator else GREEN
-        self.speed = 1 * 60/FPS # Pour rester constant selon les FPS
+        self.color = color
+        self.speed = speed * 60/FPS # Pour rester constant selon les FPS
         self.iteration = 0
         self.rays = []
         self.rays_angles = []
-        self.detect_range = 100
+        self.detect_range = detect_range
         self.target = None
         self.energy = 50 if self.is_predator else 10
         if self.is_predator : Predators.append(self)
@@ -87,7 +87,7 @@ class blob:
         if self in Preys        : Preys.__delitem__(Preys.index(self))
 
     def split(self):
-        blob(self.x,self.y,None,self.is_predator)
+        blob(self.x,self.y,None,self.is_predator,color=blob.color,speed=blob.speed,detect_range=100)
         self.energy -= self.split_cost
 
     def bite(self,target):

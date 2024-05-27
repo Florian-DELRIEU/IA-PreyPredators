@@ -6,7 +6,7 @@ pygame.font.init()
 font = pygame.font.SysFont("Arial",12)
 
 # Configuration de la fenêtre
-width, height = 1000*1, 1000*1
+width, height = 2000*1, 1000*1
 window = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Simulation Proie-Prédateur")
 

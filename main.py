@@ -5,8 +5,8 @@ from pygame_init import *
 from classes import blob,Preys,Predators
 
 # Blobs
-for _ in range (15): blob(None,None,None,False,color=GREEN)
-for _ in range (1): blob(None,None,None,True,color=RED,speed=1.2)
+for _ in range (30): blob(None,None,None,False,color=GREEN)
+for _ in range (2): blob(None,None,None,True,color=RED,speed=1.2)
 
 selected_blob = None
 # Boucle principale

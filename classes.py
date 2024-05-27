@@ -87,7 +87,7 @@ class blob:
         if self in Preys        : Preys.__delitem__(Preys.index(self))
 
     def split(self):
-        blob(self.x,self.y,None,self.is_predator,color=blob.color,speed=blob.speed,detect_range=100)
+        blob(self.x,self.y,None,self.is_predator,color=self.color,speed=self.speed,detect_range=100)
         self.energy -= self.split_cost
 
     def bite(self,target):

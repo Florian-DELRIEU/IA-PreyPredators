@@ -2,17 +2,19 @@ import pygame
 import time
 import math
 from pygame_init import *
-from classes import blob,Preys,Predators
+from classes import *
 
 # Blobs
-for _ in range (15): blob(None,None,None,False,color=GREEN)
-for _ in range (1): blob(None,None,None,True,color=RED,speed=1.2)
+for _ in range (15): blob(None,None,None,False,color=GREEN,Behavior="Random")
+for _ in range (1): blob(None,None,None,True,color=RED,speed=1.2,Behavior="Predator",rays_angles=Predators_rays_2)
 
 selected_blob = None
 # Boucle principale
 running = True
 frame = 0
 paused = False
+
+# Boucle des controles
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -28,6 +30,7 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 paused = not paused
+
     # Dessiner la fenêtre
     window.fill(WHITE)
 
@@ -53,12 +56,14 @@ while running:
         info_surface = font.render(info_text, True, BLACK)
         window.blit(info_surface, (10, 10))
 
+    # Boucle de simulation des blobs
     if not paused:
         for blob in Predators + Preys:
-            if blob in Predators : blob.detect(Preys)
             blob.move()
+            blob.energy_turn()
             blob.draw(window)
             if blob.energy <= 0: blob.die()
+            if blob.is_predator: blob.draw_rays(window)
         pygame.display.update()
 
 # Quitter Pygame

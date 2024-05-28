@@ -7,7 +7,7 @@ from classes import blob, Preys, Predators
 for _ in range(15):
     blob(None, None, None, False, color=GREEN,speed=1)
 for _ in range(5):
-    blob(None, None, None, True, color=RED, speed=1.2)
+    blob(None, None, None, True, color=RED, speed=1)
 
 selected_blob = None
 running = True
@@ -51,8 +51,7 @@ while running:
             if blob in Predators:
                 blob.detect(Preys)
             blob.move()
-            if blob.energy <= 0:
-                blob.die()
+            blob.energy_turn()
 
     for blob in Preys + Predators:
         blob.draw(window)

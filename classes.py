@@ -16,6 +16,9 @@ from pygame_init import *
 Preys = []
 Predators = []
 
+Predator_rays = [0] + [10,30,45,90,135] + [-10,-30,-45,-90,-135]
+Preys_rays =    [0,180] + [30,60,90,120,150] + [-30,-60,-90,-120,-150]
+
 class blob:
     def __init__(self,x=None,y=None,direction=None,is_predator=False,speed=1,detect_range=100,color=RED):
         self.x = random.randint(0,width) if x is None else x
@@ -79,14 +82,15 @@ class blob:
             self.iteration = 0
             self.x += self.speed * np.cos(self.direction)
             self.y += self.speed * np.sin(self.direction)
-        if self.is_predator : self.gain_energy(-0.05)
-        if not self.is_predator : self.gain_energy(0.1)
 
     def gain_energy(self,ammont):
         self.energy += ammont
         if self.energy <= 0: self.die()
         if self.energy >= 1.5*self.split_cost: self.split()
 
+    def energy_turn(self):
+        if self.is_predator : self.gain_energy(-0.05)
+        if not self.is_predator : self.gain_energy(0.1)
 
     def die(self):
         self.energy=0
@@ -109,7 +113,7 @@ class blob:
         """
         self.rays = []
         self.rays_angles = self.direction + np.radians(np.array(
-            [0] + [10,30,45,90,135] + [-10,-30,-45,-90,-135]
+            Predator_rays if self.is_predator else Preys_rays
         ))
         for i in range(len(self.rays_angles)):
             current_angle = self.rays_angles[i]

@@ -4,9 +4,9 @@ from pygame_init import *
 from classes import blob, Preys, Predators
 
 # Création des blobs
-for _ in range(1):
-    blob(None, None, None, False, color=GREEN,speed=10)
-for _ in range(0):
+for _ in range(15):
+    blob(None, None, None, False, color=GREEN,speed=1)
+for _ in range(5):
     blob(None, None, None, True, color=RED, speed=1.2)
 
 selected_blob = None
@@ -41,6 +41,7 @@ while running:
         info_text = f"Type: {'Prédateur' if selected_blob.is_predator else 'Proie'}\n" \
                     f"Energie: {selected_blob.energy:.2f}\n" \
                     f"Cible: {'True' if selected_blob.target else 'False'}"
+        selected_blob.create_rays()
         selected_blob.draw_rays(window)
         info_surface = font.render(info_text, True, BLACK)
         window.blit(info_surface, (10, 10))
@@ -50,9 +51,11 @@ while running:
             if blob in Predators:
                 blob.detect(Preys)
             blob.move()
-            blob.draw(window)
             if blob.energy <= 0:
                 blob.die()
+
+    for blob in Preys + Predators:
+        blob.draw(window)
 
     pygame.display.update()
     clock.tick(FPS)

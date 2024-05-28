@@ -1,4 +1,13 @@
-import pygame
+"""
+Module contenant les classes pour la simulation Proies-Prédateurs.
+
+Ce module contient les classes nécessaires pour créer et gérer les blobs proies et prédateurs dans la simulation.
+
+Classes:
+    blob: Classe représentant un blob dans la simulation.
+    Preys: Classe représentant un groupe de blobs proies.
+    Predators: Classe représentant un groupe de blobs prédateurs.
+"""
 import random
 import math
 import numpy as np
@@ -9,10 +18,8 @@ Predators = []
 
 class blob:
     def __init__(self,x=None,y=None,direction=None,is_predator=False,speed=1,detect_range=100,color=RED):
-        if x is None:   self.x = random.randint(0,width)
-        else:           self.x = x
-        if y is None:   self.y = random.randint(0,height)
-        else:           self.y = y
+        self.x = random.randint(0,width) if x is None else x
+        self.y = random.randint(0,height) if y is None else y
         if direction is None:   self.direction = np.radians(random.randint(0,360))
         else:           self.direction = np.radians(direction)
         self.is_predator = is_predator
@@ -60,7 +67,7 @@ class blob:
         elif self.is_predator:
             method = "predator"
         self.iteration += 1
-        #self.keep_in_screen()
+        self.keep_in_screen(width,height)
         loop_iteration = random.randint(50,100)
         if method == "random":
             self.x += self.speed * np.cos(self.direction)
@@ -140,17 +147,18 @@ class blob:
                         break
         self.target = closest_prey
         # Changement de couleur si proie detecté
-        if self.target is None: self.color = RED
-        else:                   self.color = BLACK
+        self.color = RED if self.target is None else BLACK
 
-    def keep_in_screen(self):
-        """
-        Assure que les blobs restent dans les limites de l'écran
-        TODO Fix it
-        """
-        screen_width, screen_height = pygame.display.get_surface().get_size()
-        self.x = max(self.size, min(self.x, screen_width - self.size))
-        self.y = max(self.size, min(self.y, screen_height - self.size))
+    def keep_in_screen(self, width, height):
+        # Vérifier et ajuster les coordonnées du blob pour qu'il reste à l'intérieur de la fenêtre
+        if self.x < 0:
+            self.x = 0
+        elif self.x > width:
+            self.x = width
+        if self.y < 0:
+            self.y = 0
+        elif self.y > height:
+            self.y = height
 
     def line_intersects_circle(self, x1, y1, x2, y2, cx, cy, prey_radius):
         """

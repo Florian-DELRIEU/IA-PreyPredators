@@ -1,3 +1,16 @@
+"""
+Module contenant les fonctions d'initialisation de Pygame.
+
+Ce module contient les fonctions nécessaires pour initialiser Pygame et créer la fenêtre de la simulation.
+
+Fonctions:
+    None
+
+Classes:
+    None
+"""
+
+
 import pygame
 
 # Initialisation de Pygame

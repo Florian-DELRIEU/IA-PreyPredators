@@ -31,10 +31,10 @@ while running:
             if event.key == pygame.K_SPACE:
                 paused = not paused
 
-    window.fill(WHITE)
+    window.fill(GREY)
 
     time_string = f"Temps: {frame // 60:02}:{frame % 60:02}"
-    text_surface = font.render(time_string, True, BLACK)
+    text_surface = font.render(time_string, True, WHITE)
     window.blit(text_surface, (width - text_surface.get_width() - 10, 10))
 
     if selected_blob:
@@ -43,7 +43,7 @@ while running:
                     f"Cible: {'True' if selected_blob.target else 'False'}"
         selected_blob.create_rays()
         selected_blob.draw_rays(window)
-        info_surface = font.render(info_text, True, BLACK)
+        info_surface = font.render(info_text, True, WHITE)
         window.blit(info_surface, (10, 10))
 
     if not paused:
@@ -52,6 +52,8 @@ while running:
                 blob.detect(Preys)
             blob.move()
             blob.energy_turn()
+        clock.tick(FPS)
+        frame += 1
 
     for blob in Preys + Predators:
         blob.draw(window)

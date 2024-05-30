@@ -55,7 +55,7 @@ class blob:
         :return:
         """
         for end_x,end_y in self.rays:
-            pygame.draw.line(window, GREY, (self.x, self.y), (end_x, end_y),width=1)
+            pygame.draw.line(window, WHITE, (self.x, self.y), (end_x, end_y),width=1)
 
     def move(self,method = "random"):
         """

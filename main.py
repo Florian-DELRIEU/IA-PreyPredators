@@ -39,6 +39,8 @@ while running:
 
     if selected_blob:
         info_text = f"Type: {'Prédateur' if selected_blob.is_predator else 'Proie'}\n" \
+                    f"Generation: {selected_blob.generation:.2f}\n" \
+                    f"Speed: {selected_blob.speed:.2f}\n" \
                     f"Energie: {selected_blob.energy:.2f}\n" \
                     f"Cible: {'True' if selected_blob.target else 'False'}"
         selected_blob.create_rays()
@@ -59,7 +61,5 @@ while running:
         blob.draw(window)
 
     pygame.display.update()
-    clock.tick(FPS)
-    frame += 1
 
 pygame.quit()

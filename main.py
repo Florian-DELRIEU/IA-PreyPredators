@@ -4,7 +4,7 @@ from pygame_init import *
 from classes import blob, Preys, Predators
 
 # Création des blobs
-for _ in range(15):
+for _ in range(20):
     blob(None, None, None, False, color=GREEN,speed=1)
 for _ in range(5):
     blob(None, None, None, True, color=RED, speed=1)
@@ -36,6 +36,13 @@ while running:
     time_string = f"Temps: {frame // 60:02}:{frame % 60:02}"
     text_surface = font.render(time_string, True, WHITE)
     window.blit(text_surface, (width - text_surface.get_width() - 10, 10))
+
+    # Affichage du nombre de proies et de prédateurs
+    prey_count = len(Preys)
+    predator_count = len(Predators)
+    count_string = f"Proies: {prey_count}  Prédateurs: {predator_count}"
+    count_surface = font.render(count_string, True, WHITE)
+    window.blit(count_surface, (width -150, 40))
 
     if selected_blob:
         info_text = f"Type: {'Prédateur' if selected_blob.is_predator else 'Proie'}\n" \

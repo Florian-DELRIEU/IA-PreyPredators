@@ -34,6 +34,7 @@ class blob:
         self.rays_angles = []
         self.detect_range = detect_range
         self.target = None
+        self.generation = 0
         self.energy = 50 if self.is_predator else 10
         if self.is_predator : Predators.append(self)
         if not self.is_predator : Preys.append(self)
@@ -89,8 +90,11 @@ class blob:
         if self.energy >= 1.5*self.split_cost: self.split()
 
     def energy_turn(self):
-        if self.is_predator : self.gain_energy(-0.05)
-        if not self.is_predator : self.gain_energy(0.1)
+        ammont = 0
+        ammont -= 0.05 * (self.speed / 1) ** 3
+        ammont -= 0.01 * (self.detect_range/100) ** 2
+        if not self.is_predator: ammont += 0.1
+        self.gain_energy(ammont)
 
     def die(self):
         self.energy=0
@@ -98,7 +102,10 @@ class blob:
         if self in Preys        : Preys.__delitem__(Preys.index(self))
 
     def split(self):
-        blob(self.x,self.y,None,self.is_predator,color=self.color,speed=self.speed,detect_range=100)
+        speed = self.speed + np.array(random.choices([-0.1,0,+0.1],[1,2,1]))
+        detect_range = self.speed + np.array(random.choices([-10,0,+10],[1,2,1]))
+        blob(self.x,self.y,None,self.is_predator,color=self.color,speed=speed,detect_range=detect_range)
+        blob.generation = self.generation + 1
         self.energy -= self.split_cost
 
     def bite(self,target):
